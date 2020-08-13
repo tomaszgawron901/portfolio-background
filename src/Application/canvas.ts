@@ -9,20 +9,27 @@ export default class Canvas {
     public readonly element: HTMLCanvasElement;
     public readonly width: number;
     public readonly height: number;
+    public readonly diagonal: number;
 
     private ctx: CanvasRenderingContext2D;
+    private gradient: CanvasGradient;
     public groups: Array<circleGroup>;
     private interval: NodeJS.Timeout;
 
     public constructor(width: number, height: number, step=1, wavelenght=100) {
         this.width = width;
         this.height = height;
+        this.diagonal = Math.sqrt(Math.pow(this.width, 2) + Math.pow(this.height,2))
 
         this.element = document.createElement('CANVAS') as HTMLCanvasElement;
         this.element.width = width;
         this.element.height = height;
 
         this.ctx = this.element.getContext('2d');
+        this.gradient = this.ctx.createLinearGradient(0, 0, this.diagonal, this.diagonal);
+        this.gradient.addColorStop(0.0, '#ff5500');
+        this.gradient.addColorStop(0.5 ,"#ffee00");
+        this.gradient.addColorStop(1.0, "#ff5500");
 
         this.groups = new Array<circleGroup>();
 
@@ -45,8 +52,17 @@ export default class Canvas {
         });
     }
 
-    public addCircle(x: number, y: number) {
-        let newCircle = new Circle(colors[Math.floor(Math.random() * 6)], 20, x, y);
+    public addCircle(x: number, y: number): void {
+        let newCircle = new Circle(this.gradient, 1, x, y);
+
+        for(let i=0; i<this.groups.length; i++) {
+            if(this.groups[i].pointInside(x, y)) {
+                continue;
+            }
+            this.groups[i].add(newCircle)
+            return;
+        }
+        this.groups.push(new circleGroup(newCircle));
     }
 
     public startDrawing(): void {
@@ -60,6 +76,9 @@ export default class Canvas {
                     circle.radius += this.step;
                 });
             });
+            if(this.groups[0].circles[0].radius >= this.diagonal) {
+                this.groups.shift();
+            }
             this.clearCanvas();
             this.drawFrame();
         }, this.wavelenght);

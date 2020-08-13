@@ -12,6 +12,15 @@ export default class CircleGroup {
         this.largesCircle = firstCircle;
     }
 
+    public pointInside(x: number, y: number): boolean {
+        for(let i=0; i<this.circles.length; i++) {
+            if(this.circles[i].pointInside(x, y)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public add(circle: Circle) {
         this.circles.push(circle);
     }

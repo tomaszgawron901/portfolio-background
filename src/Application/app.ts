@@ -1,17 +1,31 @@
 import Canvas from './canvas';
-import Circle from './circle';
-import CircleGroup from './circleGroup';
+
+function randn_bm() {
+    var rand = 0;
+    
+    for (var i = 0; i < 3; i += 1) {
+        rand += Math.random();
+    }
+    
+    return rand / 3;
+}
 
 export class App {
 
     constructor() {
-        let canvas = new Canvas(window.innerWidth, window.innerHeight, 2, 50);
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        let canvas = new Canvas(width, height, 2, 50);
         document.body.appendChild(canvas.element);
-        const group = new CircleGroup(new Circle('red', 30, 200, 200));
-        canvas.groups.push(group);
-        group.add(new Circle('blue', 20, 220, 220));
-        group.add(new Circle('green', 50, 400, 400));
-        group.add(new Circle('yellow', 1, 300, 300));
+        setInterval(()=> {
+            canvas.addCircle(Math.floor((randn_bm()*width)), Math.floor((randn_bm()*height)));
+        }, 3333)
+        setInterval(()=> {
+            canvas.addCircle(Math.floor((randn_bm()*width)), Math.floor((randn_bm()*height)));
+        }, 8888)
+        setInterval(()=> {
+            canvas.addCircle(Math.floor((randn_bm()*width)), Math.floor((randn_bm()*height)));
+        }, 6666)
         canvas.startDrawing();
     }
 }
