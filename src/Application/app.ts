@@ -12,20 +12,46 @@ function randn_bm() {
 
 export class App {
 
+    private intervals: NodeJS.Timeout[];
+    private canvas: Canvas;
+
     constructor() {
-        let width = window.innerWidth;
-        let height = window.innerHeight;
-        let canvas = new Canvas(width, height, 2, 50);
-        document.body.appendChild(canvas.element);
-        setInterval(()=> {
-            canvas.addCircle(Math.floor((randn_bm()*width)), Math.floor((randn_bm()*height)));
-        }, 3333)
-        setInterval(()=> {
-            canvas.addCircle(Math.floor((randn_bm()*width)), Math.floor((randn_bm()*height)));
-        }, 8888)
-        setInterval(()=> {
-            canvas.addCircle(Math.floor((randn_bm()*width)), Math.floor((randn_bm()*height)));
-        }, 6666)
-        canvas.startDrawing();
+        document.onvisibilitychange = () => {
+            if(document.visibilityState == "visible")
+            {
+                this.start();
+            }
+            else
+            {
+                this.stop();
+            }
+        }
+        this.intervals = new Array<NodeJS.Timeout>();
+        this.canvas = new Canvas(window.innerWidth, window.innerHeight, 2, 50);
+        document.body.appendChild(this.canvas.element);
+
+        this.start();
     }
+
+    public start() {
+
+        this.intervals.push(setInterval(()=> {
+            this.canvas.addCircle(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height)));
+        }, 2333));
+        this.intervals.push(setInterval(()=> {
+            this.canvas.addCircle(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height)));
+        }, 8888))
+        this.intervals.push(setInterval(()=> {
+            this.canvas.addCircle(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height)));
+        }, 6666))
+        this.canvas.startDrawing();
+    }
+
+    public stop() {
+        while(this.intervals.length > 0) {
+            clearInterval(this.intervals.pop());
+        }
+        this.canvas.stopDrawing();
+    }
+
 }
