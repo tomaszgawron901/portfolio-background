@@ -1,13 +1,13 @@
 
 export default class Circle {
-    public color: string | CanvasGradient;
+    public maxRadius: number;
     public radius: number;
     public x: number;
     public y: number;
 
-    public constructor(color: string | CanvasGradient, radius: number, x: number, y: number ) {
-        this.color = color;
+    public constructor(radius: number, maxRadius: number, x: number, y: number ) {
         this.radius = radius;
+        this.maxRadius = maxRadius;
         this.x = x;
         this.y = y;
     }

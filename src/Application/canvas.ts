@@ -3,12 +3,19 @@ import Circle from './circle';
 
 const colors = ['#ff0000', '#ffdd00', '#40ff00', '#00ff99', '#00d0ff', '#ee00ff'];
 
+function distance(x1: number, y1: number, x2: number, y2: number) {
+    return Math.sqrt(Math.pow( x1 - x2, 2) + Math.pow(y1 - y2, 2));
+}
+
+
 export default class Canvas {
     public step: number;
     public wavelenght: number;
     public readonly element: HTMLCanvasElement;
     public readonly width: number;
     public readonly height: number;
+    public readonly halfWidth: number;
+    public readonly halfHeight: number;
     public readonly diagonal: number;
 
     private ctx: CanvasRenderingContext2D;
@@ -19,6 +26,8 @@ export default class Canvas {
     public constructor(width: number, height: number, step=1, wavelenght=100) {
         this.width = width;
         this.height = height;
+        this.halfWidth = Math.floor(this.width/2);
+        this.halfHeight = Math.floor(this.height/2);
         this.diagonal = Math.sqrt(Math.pow(this.width, 2) + Math.pow(this.height,2))
 
         this.element = document.createElement('CANVAS') as HTMLCanvasElement;
@@ -48,12 +57,13 @@ export default class Canvas {
 
     public drawFrame(): void {
         this.groups.forEach(group => {
-            this.ctx.drawImage(group.getImage(this.width, this.height), 0, 0);
+            this.ctx.drawImage(group.getImage(), 0, 0);
         });
     }
 
     public addCircle(x: number, y: number): void {
-        let newCircle = new Circle(this.gradient, 1, x, y);
+        let maxRadius = this.calculateDistanceToFurthestCorner(x, y);
+        let newCircle = new Circle(1, maxRadius, x, y);
 
         for(let i=0; i<this.groups.length; i++) {
             if(this.groups[i].pointInside(x, y)) {
@@ -62,7 +72,35 @@ export default class Canvas {
             this.groups[i].add(newCircle)
             return;
         }
-        this.groups.push(new circleGroup(newCircle));
+        let newCircleGroup = new circleGroup(newCircle, this.width, this.height);
+        newCircleGroup.ctx.strokeStyle = this.gradient;
+        newCircleGroup.ctx.lineWidth = 5;
+        this.groups.push(newCircleGroup);
+    }
+
+    private calculateDistanceToFurthestCorner(x: number, y: number) {
+        if (x < this.halfWidth) 
+        {
+            if (y < this.halfHeight)
+            {
+                return distance(x, y, this.width, this.height);
+            }
+            else
+            {
+                return distance(x, y, this.width, 0);
+            }
+        }
+        else
+        {
+            if (y < this.halfHeight)
+            {
+                return distance(x, y, 0, this.height);
+            }
+            else
+            {
+                return distance(x, y, 0, 0);
+            }
+        }
     }
 
     public startDrawing(): void {
@@ -76,8 +114,11 @@ export default class Canvas {
                     circle.radius += this.step;
                 });
             });
-            if(this.groups[0].circles[0].radius >= this.diagonal) {
-                this.groups.shift();
+            if(this.groups.length > 0){
+                let firstCircle = this.groups[0].circles[0];
+                if(firstCircle.radius >= firstCircle.maxRadius) {
+                    this.groups.shift();
+                }
             }
             this.clearCanvas();
             this.drawFrame();

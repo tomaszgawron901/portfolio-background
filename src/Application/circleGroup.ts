@@ -6,7 +6,19 @@ export default class CircleGroup {
     public circles: Array<Circle>;
     public largesCircle: Circle;
 
-    public constructor(firstCircle: Circle) {
+    private canvas: HTMLCanvasElement;
+    
+    private _ctx : CanvasRenderingContext2D;
+    public get ctx() : CanvasRenderingContext2D {
+        return this._ctx;
+    }
+
+    public constructor(firstCircle: Circle, canvasWidh: number, canvasHeight: number) {
+        this.canvas = document.createElement('CANVAS') as HTMLCanvasElement;
+        this.canvas.width = canvasWidh;
+        this.canvas.height = canvasHeight;
+        this._ctx = this.canvas.getContext('2d');
+        
         this.circles = new Array<Circle>();
         this.circles.push(firstCircle);
         this.largesCircle = firstCircle;
@@ -25,29 +37,24 @@ export default class CircleGroup {
         this.circles.push(circle);
     }
 
-    public getImage(width: number, height: number) {
-        let canvas = document.createElement('CANVAS') as HTMLCanvasElement;
-        canvas.width = width;
-        canvas.height = height;
-        let ctx = canvas.getContext('2d');
-        ctx.lineWidth = 5;
+    public getImage() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        ctx.globalCompositeOperation = 'screen';
+        this.ctx.globalCompositeOperation = 'screen';
         this.circles.forEach(circle => {
-            ctx.beginPath();
-            ctx.arc(circle.x, circle.y, circle.radius, 0, PI2);
-            ctx.closePath();
-            ctx.strokeStyle = circle.color;
-            ctx.stroke();
+            this.ctx.beginPath();
+            this.ctx.arc(circle.x, circle.y, circle.radius, 0, PI2);
+            this.ctx.closePath();
+            this.ctx.stroke();
         });
 
-        ctx.globalCompositeOperation = 'destination-out';
+        this.ctx.globalCompositeOperation = 'destination-out';
         this.circles.forEach(circle => {
-            ctx.beginPath();
-            ctx.arc(circle.x, circle.y, circle.radius, 0, PI2);
-            ctx.closePath();
-            ctx.fill();
+            this.ctx.beginPath();
+            this.ctx.arc(circle.x, circle.y, circle.radius, 0, PI2);
+            this.ctx.closePath();
+            this.ctx.fill();
         });
-        return canvas;
+        return this.canvas;
     }
 }
