@@ -16,16 +16,9 @@ export class App {
     private canvas: Canvas;
 
     constructor() {
-        document.onvisibilitychange = () => {
-            if(document.visibilityState == "visible")
-            {
-                this.start();
-            }
-            else
-            {
-                this.stop();
-            }
-        }
+        document.onvisibilitychange = ()=>{ this.onVisibilityChange() };
+        window.onresize = ()=>{ this.onWindowsResize() };
+
         this.intervals = new Array<NodeJS.Timeout>();
         this.canvas = new Canvas(window.innerWidth, window.innerHeight, 2, 50);
         document.body.appendChild(this.canvas.element);
@@ -34,7 +27,6 @@ export class App {
     }
 
     public start() {
-
         this.intervals.push(setInterval(()=> {
             this.canvas.addCircle(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height)));
         }, 2333));
@@ -52,6 +44,23 @@ export class App {
             clearInterval(this.intervals.pop());
         }
         this.canvas.stopDrawing();
+    }
+
+    private onVisibilityChange() {
+        if(document.visibilityState == "visible")
+        {
+            this.start();
+        }
+        else
+        {
+            this.stop();
+        }
+    }
+
+    private onWindowsResize() {
+        this.stop();
+        this.canvas.resizeCanvas(window.innerWidth, window.innerHeight);
+        this.start();
     }
 
 }

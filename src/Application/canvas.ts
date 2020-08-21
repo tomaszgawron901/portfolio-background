@@ -10,11 +10,11 @@ export default class Canvas {
     public step: number;
     public wavelenght: number;
     public readonly element: HTMLCanvasElement;
-    public readonly width: number;
-    public readonly height: number;
-    public readonly halfWidth: number;
-    public readonly halfHeight: number;
-    public readonly diagonal: number;
+    public width: number;
+    public height: number;
+    public halfWidth: number;
+    public halfHeight: number;
+    public diagonal: number;
 
     private ctx: CanvasRenderingContext2D;
     private gradient: CanvasGradient;
@@ -22,15 +22,9 @@ export default class Canvas {
     private interval: NodeJS.Timeout;
 
     public constructor(width: number, height: number, step=1, wavelenght=100) {
-        this.width = width;
-        this.height = height;
-        this.halfWidth = Math.floor(this.width/2);
-        this.halfHeight = Math.floor(this.height/2);
-        this.diagonal = Math.sqrt(Math.pow(this.width, 2) + Math.pow(this.height,2))
 
         this.element = document.createElement('CANVAS') as HTMLCanvasElement;
-        this.element.width = width;
-        this.element.height = height;
+        this.setSize(width, height);
 
         this.ctx = this.element.getContext('2d');
         this.gradient = this.ctx.createLinearGradient(0, 0, this.diagonal, this.diagonal);
@@ -42,6 +36,25 @@ export default class Canvas {
 
         this.step = step;
         this.wavelenght = wavelenght;
+    }
+
+    public resizeCanvas(width: number, height: number)
+    {
+        this.stopDrawing();
+        this.setSize(width, height);
+        this.groups = new Array<circleGroup>();
+        this.startDrawing();
+    }
+
+    private setSize(width: number, height: number)
+    {
+        this.width = width;
+        this.height = height;
+        this.halfWidth = Math.floor(this.width/2);
+        this.halfHeight = Math.floor(this.height/2);
+        this.diagonal = Math.sqrt(Math.pow(this.width, 2) + Math.pow(this.height,2))
+        this.element.width = width;
+        this.element.height = height;
     }
 
     private clearCanvas(): void {
