@@ -40,7 +40,7 @@ export default class CircleGroup {
     public getImage() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.ctx.globalCompositeOperation = 'screen';
+        this.ctx.globalCompositeOperation = 'source-over';
         this.circles.forEach(circle => {
             this.ctx.beginPath();
             this.ctx.arc(circle.x, circle.y, circle.radius, 0, PI2);

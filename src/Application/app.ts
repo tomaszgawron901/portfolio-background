@@ -29,7 +29,7 @@ export class App {
     public start() {
         this.intervals.push(setInterval(()=> {
             this.canvas.addCircle(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height)));
-        }, 2333));
+        }, 1333));
         this.intervals.push(setInterval(()=> {
             this.canvas.addCircle(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height)));
         }, 8888))

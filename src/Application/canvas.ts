@@ -1,5 +1,6 @@
 import circleGroup from './circleGroup'
 import Circle from './circle';
+import ListRoulette from './roulette';
 
 function distance(x1: number, y1: number, x2: number, y2: number) {
     return Math.sqrt(Math.pow( x1 - x2, 2) + Math.pow(y1 - y2, 2));
@@ -17,7 +18,7 @@ export default class Canvas {
     public diagonal: number;
 
     private ctx: CanvasRenderingContext2D;
-    private gradient: CanvasGradient;
+    private colors: ListRoulette<string>;
     public groups: Array<circleGroup>;
     private interval: NodeJS.Timeout;
 
@@ -27,11 +28,8 @@ export default class Canvas {
         this.setSize(width, height);
 
         this.ctx = this.element.getContext('2d');
-        this.gradient = this.ctx.createLinearGradient(0, 0, this.diagonal, this.diagonal);
-        this.gradient.addColorStop(0.0, '#ff5500');
-        this.gradient.addColorStop(0.5 ,"#ffee00");
-        this.gradient.addColorStop(1.0, "#ff5500");
-
+        //this.colors = new ListRoulette<string>("#ff5900","#ff7700","#ff9900","#ffc800","#ff9900", "#ff7700");
+        this.colors = new ListRoulette<string>("#ff0000","#ff8c00","#fffb00","#a6ff00","#00ff04", "#00ff80", "#00eaff", "#00a6ff", "#0026ff", "#7300ff", "#ff00f2", "#ff0062");
         this.groups = new Array<circleGroup>();
 
         this.step = step;
@@ -58,12 +56,7 @@ export default class Canvas {
     }
 
     private clearCanvas(): void {
-        const data = this.ctx.getImageData(0, 0, this.width, this.height);
-        const dataLenght = data.data.length;
-        for( let i=3; i<dataLenght; i+=4 ) {
-            data.data[i] *= 0.65;
-        }
-        this.ctx.putImageData(data,0 ,0);
+        this.ctx.clearRect(0, 0, this.width, this.height);
     }
 
     public drawFrame(): void {
@@ -84,7 +77,7 @@ export default class Canvas {
             return;
         }
         let newCircleGroup = new circleGroup(newCircle, this.width, this.height);
-        newCircleGroup.ctx.strokeStyle = this.gradient;
+        newCircleGroup.ctx.strokeStyle = this.colors.get();
         newCircleGroup.ctx.lineWidth = 5;
         this.groups.push(newCircleGroup);
     }
