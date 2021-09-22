@@ -1,6 +1,7 @@
 import circleGroup from './circleGroup'
 import Circle from './circle';
 import ListRoulette from './roulette';
+import { Point } from './point';
 
 function distance(x1: number, y1: number, x2: number, y2: number) {
     return Math.sqrt(Math.pow( x1 - x2, 2) + Math.pow(y1 - y2, 2));
@@ -28,8 +29,8 @@ export default class Canvas {
         this.setSize(width, height);
 
         this.ctx = this.element.getContext('2d');
-        //this.colors = new ListRoulette<string>("#ff5900","#ff7700","#ff9900","#ffc800","#ff9900", "#ff7700");
-        this.colors = new ListRoulette<string>("#ff0000","#ff8c00","#fffb00","#a6ff00","#00ff04", "#00ff80", "#00eaff", "#00a6ff", "#0026ff", "#7300ff", "#ff00f2", "#ff0062");
+        this.colors = new ListRoulette<string>("#fc0303","#fc5603","#fca903","#fce703","#b1fc03", "#fce703", "#fca903", "#fc5603");
+        //this.colors = new ListRoulette<string>("#ff0000","#ff8c00","#fffb00","#a6ff00","#00ff04", "#00ff80", "#00eaff", "#00a6ff", "#0026ff", "#7300ff", "#ff00f2", "#ff0062");
         this.groups = new Array<circleGroup>();
 
         this.step = step;
@@ -61,48 +62,47 @@ export default class Canvas {
 
     public drawFrame(): void {
         this.groups.forEach(group => {
-            this.ctx.drawImage(group.getImage(), 0, 0);
+            group.draw(this.ctx);
         });
     }
 
-    public addCircle(x: number, y: number): void {
-        let maxRadius = this.calculateDistanceToFurthestCorner(x, y);
-        let newCircle = new Circle(1, maxRadius, x, y);
-
+    public addCircle(point: Point): void {
+        
+        let newCircle = new Circle(1, point);
         for(let i=0; i<this.groups.length; i++) {
-            if(this.groups[i].pointInside(x, y)) {
+            if(this.groups[i].pointInside(point)) {
                 continue;
             }
             this.groups[i].add(newCircle)
             return;
         }
-        let newCircleGroup = new circleGroup(newCircle, this.width, this.height);
-        newCircleGroup.ctx.strokeStyle = this.colors.get();
-        newCircleGroup.ctx.lineWidth = 5;
+        const maxRadius = this.calculateDistanceToFurthestCorner(point);
+        const newCircleGroup = new circleGroup(newCircle, maxRadius);
+        newCircleGroup.color = this.colors.get();
         this.groups.push(newCircleGroup);
     }
 
-    private calculateDistanceToFurthestCorner(x: number, y: number) {
-        if (x < this.halfWidth) 
+    private calculateDistanceToFurthestCorner(point: Point) {
+        if (point.x < this.halfWidth) 
         {
-            if (y < this.halfHeight)
+            if (point.y < this.halfHeight)
             {
-                return distance(x, y, this.width, this.height);
+                return point.distanceTo(new Point(this.width, this.height));
             }
             else
             {
-                return distance(x, y, this.width, 0);
+                return point.distanceTo(new Point(this.width, 0));
             }
         }
         else
         {
-            if (y < this.halfHeight)
+            if (point.y < this.halfHeight)
             {
-                return distance(x, y, 0, this.height);
+                return point.distanceTo(new Point(0, this.height));
             }
             else
             {
-                return distance(x, y, 0, 0);
+                return point.distanceTo(new Point(0, 0));
             }
         }
     }
@@ -111,19 +111,17 @@ export default class Canvas {
         if(this.interval) {
             return;
         }
-        this.ctx.globalCompositeOperation = 'source-over';
         this.interval = setInterval(() => {
+            this.groups = this.groups.filter(
+                group => {
+                    return group.maxRadius > group.largesCircle.radius + this.step;
+                }
+            )
             this.groups.forEach(group => {
                 group.circles.forEach(circle => {
                     circle.radius += this.step;
                 });
             });
-            if(this.groups.length > 0){
-                let firstCircle = this.groups[0].circles[0];
-                if(firstCircle.radius >= firstCircle.maxRadius) {
-                    this.groups.shift();
-                }
-            }
             this.clearCanvas();
             this.drawFrame();
         }, this.wavelenght);

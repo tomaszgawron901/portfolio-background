@@ -1,4 +1,5 @@
 import Canvas from './canvas';
+import { Point } from './point';
 
 function randn_bm() {
     var rand = 0;
@@ -10,31 +11,34 @@ function randn_bm() {
     return rand / 3;
 }
 
-export class App {
+export class BackgroundApp {
 
     private intervals: NodeJS.Timeout[];
     private canvas: Canvas;
+    private rootElement: HTMLElement;
 
-    constructor() {
+    constructor(rootElement: HTMLElement) {
         document.onvisibilitychange = ()=>{ this.onVisibilityChange() };
         window.onresize = ()=>{ this.onWindowsResize() };
 
         this.intervals = new Array<NodeJS.Timeout>();
         this.canvas = new Canvas(window.innerWidth, window.innerHeight, 2, 50);
-        document.body.appendChild(this.canvas.element);
+        this.rootElement = rootElement;
+        this.rootElement.appendChild(this.canvas.element);
+        //document.body.appendChild(this.canvas.element);
 
         this.start();
     }
 
     public start() {
         this.intervals.push(setInterval(()=> {
-            this.canvas.addCircle(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height)));
-        }, 1333));
+            this.canvas.addCircle(new Point(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height))));
+        }, 333));
         this.intervals.push(setInterval(()=> {
-            this.canvas.addCircle(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height)));
+            this.canvas.addCircle(new Point(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height))));
         }, 8888))
         this.intervals.push(setInterval(()=> {
-            this.canvas.addCircle(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height)));
+            this.canvas.addCircle(new Point(Math.floor((randn_bm()*this.canvas.width)), Math.floor((randn_bm()*this.canvas.height))));
         }, 6666))
         this.canvas.startDrawing();
     }

@@ -1,4 +1,4 @@
 import './main.scss';
-import { App } from './Application/app';
+import { BackgroundApp } from './Application/app';
 
-const app = new App();
+const app = new BackgroundApp(document.body);

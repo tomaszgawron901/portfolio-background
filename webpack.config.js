@@ -3,15 +3,15 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   mode: "development",
-  entry: "./src/index.ts",
+  entry: "./src/Application/app.ts",
   output: {
-    filename: "index.js",
+    filename: "backgroundApp.js",
     path: path.resolve(__dirname, "docs")
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".json"]
   },
-  devtool: "inline-source-map",
+  devtool: "hidden-source-map",
   plugins: [
     new CopyPlugin([
       {
