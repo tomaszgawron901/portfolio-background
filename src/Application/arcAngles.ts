@@ -17,6 +17,10 @@ export abstract class ArcAngles {
 
     public abstract isContainedBySolidIntersectionAngles(other: SolidArcAngles): boolean;
 
+    public haveCommonPart(other: ArcAngles): boolean {
+        return this.containsAngle(other.startAngle) || this.containsAngle(other.endAngle);
+    }
+
     public static create(startAngle: number, endAngle: number): ArcAngles {
         if(startAngle > endAngle) {
             return new BreakedArcAngles(startAngle, endAngle);

@@ -1,4 +1,5 @@
 import { ArcAngles } from "./arcAngles";
+import { IntersectionAnglesPair } from "./intersectionAnglesPair";
 import { MathValues } from "./mathValues";
 import { Point } from "./point";
 
@@ -44,11 +45,7 @@ export default class Circle {
         return Circle.colideWith(this, circle);
     }
 
-    public getIntersectionAngles(other: Circle)
-    : {
-        selfIntersectionAngles: ArcAngles, 
-        otherIntersectionAngles: ArcAngles
-    } {
+    public getIntersectionAnglesPair(other: Circle): IntersectionAnglesPair {
         const distance = Point.distanceBetween(this.center, other.center);
         const distance2 = distance*2;
         const distanceSqr = distance * distance;
