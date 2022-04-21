@@ -128,15 +128,22 @@ export class ArcPath extends SolidArcAngles{
                 );
             }
 
-            const inCirclePath = newCirclePaths.find(x => x.containsAngle(pathIntersectionAnglesPair.otherIntersectionAngles.endAngle));
-            inCirclePath.startAngle = pathIntersectionAnglesPair.otherIntersectionAngles.endAngle;
+            let inCirclePath: ArcPath = newCirclePaths.find(x => x.containsAngle(circleIntersectionAngles.startAngle));
+            let outCirclePath: ArcPath;
+            if(circleIntersectionAngles.containsAngle(0)) {
+                outCirclePath = newCirclePaths.find(x => x.containsAngle(circleIntersectionAngles.endAngle));
+                outCirclePath.startAngle = circleIntersectionAngles.endAngle;
+            }
+            else {
+                outCirclePath = new ArcPath(newCircle, circleIntersectionAngles.endAngle, inCirclePath.endAngle);
+            }
 
-            const outCirclePath = newCirclePaths.find(x => x.containsAngle(circleIntersectionAngles.startAngle));
-            outCirclePath.next = outPath; // not finished, u might want to split path
-            outCirclePath.endAngle = circleIntersectionAngles.startAngle;
+            inCirclePath.endAngle = circleIntersectionAngles.startAngle;
+            inCirclePath.next = path;
+            outPath.next = outCirclePath;
 
-            path.next = inCirclePath;
             path.endAngle = pathIntersectionAnglesPair.selfIntersectionAngles.startAngle;
+            path.next = inCirclePath;
 
             output.outerPath = path;
             path = outPath.next;

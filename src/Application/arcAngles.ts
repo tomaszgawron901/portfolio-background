@@ -11,11 +11,11 @@ export abstract class ArcAngles {
 
     public abstract containsAngle(angle: number): boolean;
 
-    public abstract containsIntersectionAngles(other: ArcAngles): boolean;
+    public abstract containsArcAngles(other: ArcAngles): boolean;
 
-    public abstract isContainedByBreakedIntersectionAngles(other: BreakedArcAngles): boolean;
+    public abstract isContainedByBreakedArcAngles(other: BreakedArcAngles): boolean;
 
-    public abstract isContainedBySolidIntersectionAngles(other: SolidArcAngles): boolean;
+    public abstract isContainedBySolidArcAngles(other: SolidArcAngles): boolean;
 
     public haveCommonPart(other: ArcAngles): boolean {
         return this.containsAngle(other.startAngle) || this.containsAngle(other.endAngle);
@@ -33,18 +33,18 @@ export class BreakedArcAngles extends ArcAngles {
 
     public containsAngle(angle: number): boolean
     {
-        return angle < this.endAngle || angle > this.startAngle;
+        return angle <= this.endAngle || angle >= this.startAngle;
     }
 
-    public containsIntersectionAngles(other: ArcAngles): boolean {
-        return other.isContainedByBreakedIntersectionAngles(this);
+    public containsArcAngles(other: ArcAngles): boolean {
+        return other.isContainedByBreakedArcAngles(this);
     }
 
-    public isContainedByBreakedIntersectionAngles(other: BreakedArcAngles): boolean {
-        return other.endAngle > this.endAngle && other.startAngle < this.startAngle;
+    public isContainedByBreakedArcAngles(other: BreakedArcAngles): boolean {
+        return other.endAngle >= this.endAngle && other.startAngle <= this.startAngle;
     }
 
-    public isContainedBySolidIntersectionAngles(other: SolidArcAngles): boolean {
+    public isContainedBySolidArcAngles(other: SolidArcAngles): boolean {
         return other.startAngle == 0 && other.endAngle == MathValues.PI2;
     }
 }
@@ -52,18 +52,18 @@ export class BreakedArcAngles extends ArcAngles {
 export class SolidArcAngles extends ArcAngles {
     public containsAngle(angle: number): boolean
     {
-        return angle > this.startAngle && angle < this.endAngle;
+        return angle >= this.startAngle && angle <= this.endAngle;
     }
 
-    public containsIntersectionAngles(other: ArcAngles): boolean {
-        return other.isContainedBySolidIntersectionAngles(this);
+    public containsArcAngles(other: ArcAngles): boolean {
+        return other.isContainedBySolidArcAngles(this);
     }
 
-    public isContainedByBreakedIntersectionAngles(other: BreakedArcAngles): boolean {
-        return this.startAngle == 0 && this.endAngle == MathValues.PI2;
+    public isContainedByBreakedArcAngles(other: BreakedArcAngles): boolean {
+        return this.startAngle >= other.startAngle || this.endAngle <= other.endAngle;
     }
 
-    public isContainedBySolidIntersectionAngles(other: SolidArcAngles): boolean {
-        return other.startAngle < this.startAngle && other.endAngle > this.endAngle;
+    public isContainedBySolidArcAngles(other: SolidArcAngles): boolean {
+        return other.startAngle <= this.startAngle && other.endAngle >= this.endAngle;
     }
 }
